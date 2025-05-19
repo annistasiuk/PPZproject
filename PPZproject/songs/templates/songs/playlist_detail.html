@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="mb-0">{{ playlist.name }}</h1>
+                <a href="{% url 'songs:add_songs_to_playlist_form' playlist.id %}"
+                    class="btn"
+                    style="background-color: #8a2be2; color: white; border-radius: 30px; padding: 10px 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <i class="bi bi-plus-circle me-2"></i> Додати пісні
+                </a>
+            </div>
+
+            <div class="card mb-4 shadow" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-header" style="background-color: #8a2be2; color: white; padding: 15px;">
+                    <h4 class="mb-0">Інформація про плейлист</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            {% if playlist.songs.first.image %}
+                            <div class="playlist-cover-main text-center">
+                                <img src="{{ playlist.songs.first.image.url }}"
+                                     alt="Обкладинка плейлиста"
+                                     class="img-fluid rounded shadow"
+                                     style="max-height: 250px; object-fit: cover; border: 5px solid #f0e6ff;">
+                            </div>
+                            {% else %}
+                            <div class="playlist-cover-placeholder rounded shadow"
+                                 style="height: 250px; background: linear-gradient(135deg, #e6d9ff 0%, #8a2be2 100%);">
+                                <div class="d-flex justify-content-center align-items-center h-100">
+                                    <i class="bi bi-music-note-list" style="font-size: 5rem; color: white;"></i>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <h2 class="mb-4">{{ playlist.name }}</h2>
+                            <p><strong>Категорія:</strong> {{ playlist.category.name }}</p>
+                            <p><strong>Кількість пісень:</strong> {{ playlist.songs.count }}</p>
+                            <p><strong>Створено:</strong> {{ playlist.created_at|date:"d.m.Y" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if playlist.songs.all %}
+            <div class="card shadow" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-header" style="background-color: #8a2be2; color: white; padding: 15px;">
+                    <h4 class="mb-0">Пісні в плейлисті</h4>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead style="background-color: #f0e6ff;">
+                                <tr>
+                                    <th style="width: 80px;">#</th>
+                                    <th style="width: 100px;">Обкладинка</th>
+                                    <th>Назва</th>
+                                    <th>Виконавець</th>
+                                    <th>Альбом</th>
+                                    <th>Дії</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for song in playlist.songs.all %}
+                                <tr>
+                                    <td class="align-middle">{{ forloop.counter }}</td>
+                                    <td>
+                                        {% if song.image %}
+                                        <img src="{{ song.image.url }}"
+                                             alt="{{ song.title }}"
+                                             class="img-fluid rounded"
+                                             style="height: 60px; width: 60px; object-fit: cover;">
+                                        {% else %}
+                                        <div class="rounded bg-light d-flex justify-content-center align-items-center"
+                                             style="height: 60px; width: 60px;">
+                                            <i class="bi bi-music-note" style="font-size: 1.5rem; color: #8a2be2;"></i>
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                    <td class="align-middle fw-bold">
+                                        <a href="{% url 'songs:song_detail' song.id %}" style="color: #8a2be2; text-decoration: none;">
+                                            {{ song.title }}
+                                        </a>
+                                    </td>
+                                    <td class="align-middle">{{ song.artist }}</td>
+                                    <td class="align-middle">{{ song.album }}</td>
+                                    <td class="align-middle">
+                                        <form action="{% url 'songs:remove_song_from_playlist' playlist.id song.id %}"
+                                              method="post"
+                                              onsubmit="return confirm('Ви дійсно хочете видалити цю пісню з плейлисту?');">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm" style="color: #dc3545; background: none; border: none;">
+                                                <i class="bi bi-x-circle"></i> Видалити
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="alert" role="alert" style="border-radius: 15px; background-color: #e6d9ff; border: none; color: #6c33c5; padding: 20px;">
+                <p class="mb-0">У цьому плейлисті ще немає пісень. <a href="{% url 'songs:index' %}" style="color: #8a2be2; font-weight: bold;">Додайте пісні до плейлисту</a>.</p>
+            </div>
+            {% endif %}
+
+            <div class="mt-4">
+                <a href="{% url 'songs:playlist_list' %}"
+                   class="btn"
+                   style="background-color: #e6d9ff; color: #8a2be2; border-radius: 20px;">
+                    <i class="bi bi-arrow-left me-1"></i> Назад до списку плейлистів
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: #f8f2ff;
+    }
+</style>
+{% endblock %}

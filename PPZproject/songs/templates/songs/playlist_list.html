@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="mb-0">Мої плейлисти</h1>
+                <a href="{% url 'songs:create_playlist' %}"
+                   class="btn btn-lg"
+                   style="background-color: #8a2be2; color: white; transition: all 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                    <i class="bi bi-plus-circle"></i> Створити новий плейлист
+                </a>
+            </div>
+
+            {% if playlists %}
+                <div class="row g-4">
+                    {% for playlist in playlists %}
+                        <div class="col-md-4">
+                            <div class="card h-100 shadow hover-effect"
+                                 style="border-radius: 15px; overflow: hidden; transition: transform 0.3s;">
+                                <div class="card-header" style="background-color: #8a2be2; color: white; padding: 15px;">
+                                    <h5 class="card-title mb-0">{{ playlist.name }}</h5>
+                                </div>
+
+                                {% if playlist.songs.first.image %}
+                                <div class="playlist-cover">
+                                    <img src="{{ playlist.songs.first.image.url }}"
+                                         alt="Обкладинка плейлиста"
+                                         class="img-fluid w-100"
+                                         style="height: 180px; object-fit: cover;">
+                                </div>
+                                {% else %}
+                                <div class="playlist-cover-placeholder"
+                                     style="height: 180px; background: linear-gradient(135deg, #e6d9ff 0%, #8a2be2 100%);">
+                                    <div class="d-flex justify-content-center align-items-center h-100">
+                                        <i class="bi bi-music-note-list" style="font-size: 3rem; color: white;"></i>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                <div class="card-body">
+                                    <p class="card-text"><strong>Категорія:</strong> {{ playlist.category.name }}</p>
+                                    <p class="card-text"><strong>Кількість пісень:</strong> {{ playlist.songs.count }}</p>
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <a href="{% url 'songs:playlist_detail' playlist.id %}"
+                                           class="btn"
+                                           style="background-color: #8a2be2; color: white; border-radius: 20px;">
+                                            Переглянути <i class="bi bi-arrow-right"></i>
+                                        </a>
+                                        <form action="{% url 'songs:remove_playlist' playlist.id %}" method="post" onsubmit="return confirm('Ви дійсно хочете видалити цей плейлист?');">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-danger" style="border-radius: 20px;">
+                                                <i class="bi bi-trash"></i> Видалити
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info" role="alert" style="border-radius: 15px; background-color: #e6d9ff; border: none; color: #6c33c5;">
+                    <p class="mb-0 py-2">У вас ще немає плейлистів. <a href="{% url 'songs:create_playlist' %}" style="color: #8a2be2; font-weight: bold;">Створити перший плейлист</a>.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-effect:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(138, 43, 226, 0.2) !important;
+    }
+</style>
+{% endblock %}

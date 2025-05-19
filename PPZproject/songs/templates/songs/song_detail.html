@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow" style="border-radius: 15px; overflow: hidden;">
+                <div class="card-header text-white" style="background-color: #8a2be2; padding: 20px;">
+                    <h2 class="mb-0">{{ song.title }}</h2>
+                </div>
+
+                {% if song.image %}
+                <div class="song-image-container" style="max-height: 400px; overflow: hidden;">
+                    <img src="{{ song.image.url }}"
+                         alt="Обкладинка {{ song.title }}"
+                         class="img-fluid w-100"
+                         style="object-fit: cover; transition: transform 0.5s;">
+                </div>
+                {% else %}
+                <div class="song-image-placeholder"
+                     style="height: 300px; background: linear-gradient(135deg, #e6d9ff 0%, #8a2be2 100%);">
+                    <div class="d-flex justify-content-center align-items-center h-100">
+                        <i class="bi bi-music-note" style="font-size: 5rem; color: white;"></i>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="card-body" style="padding: 30px;">
+                    <div class="row mb-4">
+                        <div class="col-md-4 text-muted">Виконавець:</div>
+                        <div class="col-md-8 fw-bold fs-5">{{ song.artist }}</div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4 text-muted">Альбом:</div>
+                        <div class="col-md-8">{{ song.album }}</div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4 text-muted">Жанр:</div>
+                        <div class="col-md-8">
+                            <a href="{% url 'songs:genre_filter' song.genre.id %}"
+                               class="badge"
+                               style="background-color: #8a2be2; color: white; text-decoration: none; padding: 8px 15px; border-radius: 30px; font-size: 0.9rem;">
+                                {{ song.genre.name }}
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4 text-muted">Дата релізу:</div>
+                        <div class="col-md-8">{{ song.release_date }}</div>
+                    </div>
+
+                    {% if user.is_authenticated %}
+                    <div class="mt-5">
+                        <a href="{% url 'songs:add_song_to_playlist' song.id %}"
+                           class="btn btn-lg w-100"
+                           style="background-color: #8a2be2; color: white; border-radius: 30px; box-shadow: 0 4px 8px rgba(138, 43, 226, 0.3);">
+                            <i class="bi bi-plus-circle me-2"></i> Додати до плейлисту
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="card-footer bg-transparent" style="padding: 15px;">
+                    <a href="{% url 'songs:index' %}"
+                       class="btn"
+                       style="background-color: #e6d9ff; color: #8a2be2; border-radius: 20px;">
+                        <i class="bi bi-arrow-left me-1"></i> Назад до списку
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .song-image-container img:hover {
+        transform: scale(1.03);
+    }
+</style>
+{% endblock %}
