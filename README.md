@@ -1,2 +1,0 @@
-# PPZproject
-Проєкт
